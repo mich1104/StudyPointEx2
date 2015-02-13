@@ -1,4 +1,5 @@
 import echoclient.EchoClient;
+import echoclient.EchoListener;
 import echoserver.EchoServer;
 import java.io.IOException;
 import org.junit.AfterClass;
@@ -10,7 +11,7 @@ import static org.junit.Assert.*;
 /**
  * @author Lars Mortensen
  */
-public class TestClient {
+public class TestClient implements EchoListener{
   
   public TestClient() {
   }
@@ -38,8 +39,15 @@ public class TestClient {
   public void send() throws IOException{
     EchoClient client = new EchoClient();
     client.connect("localhost",9090);
+    client.registerObserver(this);
+    new Thread(client).start();
     client.send("Hello");
-    assertEquals("HELLO", client.receive());
+    
   }
+
+    @Override
+    public void messageArrived(String data) {
+        assertEquals("HELLO", data);
+    }
   
 }
